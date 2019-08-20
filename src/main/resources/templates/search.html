@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1"></meta>
+	<title>Search Song</title>
+	
+	<style type="text/css">
+		tr.songRows > td {
+		    padding:0 15px 0 15px;
+		    text-align:center;
+		}
+		
+		div.songData {
+		    padding: 20px;
+		}
+	</style>
+
+</head>
+<body>
+
+<form action="/doSearch" method="get">
+    <label for="searchTerm">Song Name</label>
+    <input type="text" th:attr="value = ${searchTerm}" name="searchTerm" id="searchTerm">
+    <input type="hidden" name="pageNum" id="pageNum" value=1>
+    <input type="submit" value="Search Songs"></input>
+    <br><span style="color:blue">You can use search queries like : abc, "abc", "abc xyz", abc*, [a To b], "abc" or "xyz" etc</span>
+</form>
+
+<div th:if="${shouldShowNotFound}" th:switch="${searchResults}">
+    <h2 th:case="null">Not Found!</h2>
+    <div class="songData" th:case="*">
+         <h2>Songs (<span style="color:red" th:text="'Page - ' + ${pageNum}"></span>) for searched term : <span style="color:red" th:text="${searchTerm}"></span></h2>
+         <h3>Total results - <span style="color:red" th:text="${totalResults}"></span></h3>
+         <table>
+             <thead>
+                 <tr>
+                     <th>Id</th>
+                     <th>Name</th>
+                 </tr>
+             </thead>
+             <tbody>
+             <tr class="songRows" th:each="songSearch : ${searchResults}">
+                 <td th:text="${songSearch.id}"></td>
+                 <td th:text="${songSearch.songName}"></td>
+             </tr>
+         	</tbody>
+     	</table>
+    </div>
+    
+    <div class="songData" th:if="${totalPages > 1}">
+    	<table>
+             <tbody>
+             <tr>
+             	 <td>
+             	 	<a th:text="First" th:href="@{/doSearch(pageNum=1, searchTerm=${searchTerm})}">
+             	 </td>
+                 <td th:if="${totalPages > 2}" th:each="i : ${#numbers.sequence( 2, totalPages - 1)}">
+                 	<a th:text="${i}" th:href="@{/doSearch(pageNum=${i}, searchTerm=${searchTerm})}">
+                 </td>
+                 <td>
+             	 	<a th:text="Last" th:href="@{/doSearch(pageNum=${totalPages}, searchTerm=${searchTerm})}">
+             	 </td>
+             </tr>
+         	</tbody>
+     	</table>
+    </div>
+</div>
+
+</body>
+</html>
